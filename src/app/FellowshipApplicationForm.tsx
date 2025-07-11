@@ -26,6 +26,7 @@ export interface FellowshipFormState {
 
 interface FellowshipApplicationFormProps {
   form: FellowshipFormState;
+  setForm: React.Dispatch<React.SetStateAction<FellowshipFormState>>;
   handleInput: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
   setStep: React.Dispatch<React.SetStateAction<'role' | 'job' | 'desc' | 'self' | 'recommend' | 'fulltimejob'>>;
@@ -94,7 +95,7 @@ const educationOptions = [
   'Other…',
 ];
 
-const FellowshipApplicationForm: React.FC<FellowshipApplicationFormProps> = ({ form, handleInput, handleSubmit, setStep, role, loading }) => (
+const FellowshipApplicationForm: React.FC<FellowshipApplicationFormProps> = ({ form, setForm, handleInput, handleSubmit, setStep, role, loading }) => (
   <form className="bg-[#232323] p-6 rounded-2xl w-full max-w-2xl min-w-[320px] text-white flex flex-col gap-6 mx-auto" onSubmit={handleSubmit}>
     <h3 className="text-3xl font-bold mb-2">Apply for the Fellowship</h3>
     <label className="flex flex-col gap-2">
@@ -133,29 +134,57 @@ const FellowshipApplicationForm: React.FC<FellowshipApplicationFormProps> = ({ f
       </label>
     ))}
     <label className="flex flex-col gap-2 font-bold">
-      CV Link*
-      <input
-        name="cv"
-        type="url"
-        placeholder="https://drive.google.com/your-cv-link"
-        value={typeof form.cv === 'string' ? form.cv : ''}
-        onChange={handleInput}
-        className="p-2 rounded text-black bg-white font-normal"
-        required
-      />
+      Please attach your Resume or CV.*
+      <div className="flex items-center gap-2">
+        <input
+          name="cv"
+          type="file"
+          accept=".pdf,.doc,.docx"
+          onChange={handleInput}
+          className="p-2 rounded text-black bg-white font-normal"
+          required
+        />
+        {form.cv && typeof form.cv !== 'string' && (
+          <>
+            <span className="text-white font-normal text-xs bg-black/40 px-2 py-1 rounded">{form.cv.name}</span>
+            <button
+              type="button"
+              className="text-red-500 font-bold text-lg ml-1"
+              onClick={() => setForm((f: FellowshipFormState) => ({ ...f, cv: null }))}
+              aria-label="Remove file"
+            >
+              ×
+            </button>
+          </>
+        )}
+      </div>
     </label>
     {/* Only show cover letter for Data role */}
     {role === 'data' && (
       <label className="flex flex-col gap-2 font-bold">
-        Cover Letter Link
-        <input
-          name="coverletter"
-          type="url"
-          placeholder="https://drive.google.com/your-cover-letter-link"
-          value={typeof form.coverletter === 'string' ? form.coverletter : ''}
-          onChange={handleInput}
-          className="p-2 rounded text-black bg-white font-normal"
-        />
+        Please attach your cover letter.
+        <div className="flex items-center gap-2">
+          <input
+            name="coverletter"
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={handleInput}
+            className="p-2 rounded text-black bg-white font-normal"
+          />
+          {form.coverletter instanceof File && (
+            <>
+              <span className="text-white font-normal text-xs bg-black/40 px-2 py-1 rounded">{form.coverletter.name}</span>
+              <button
+                type="button"
+                className="text-red-500 font-bold text-lg ml-1"
+                onClick={() => setForm((f: FellowshipFormState) => ({ ...f, coverletter: null }))}
+                aria-label="Remove file"
+              >
+                ×
+              </button>
+            </>
+          )}
+        </div>
       </label>
     )}
     <label className="flex flex-col gap-2">

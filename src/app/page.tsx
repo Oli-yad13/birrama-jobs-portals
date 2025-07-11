@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -48,8 +48,9 @@ function NavBar() {
 function MarqueeText() {
   return (
     <div className="w-full z-20 overflow-visible">
-      <div className="relative w-full mx-auto flex items-start justify-center min-w-0 mt-2" style={{ minHeight: 0 }}>
-        <span className="font-extrabold text-black tracking-tight pt-0 mt-0 uppercase whitespace-nowrap max-w-full overflow-hidden text-ellipsis text-[4vw]">BIRRAMA TALENT ACQUISITION PORTAL</span>
+      <div className="relative w-full mx-auto flex flex-col items-center justify-center min-w-0 mt-2" style={{ minHeight: 0 }}>
+        <span className="font-extrabold text-black tracking-tight pt-0 mt-0 uppercase whitespace-nowrap max-w-full overflow-hidden text-ellipsis text-2xl sm:text-4xl md:text-5xl lg:text-[4vw]">Birrama Venture Studio</span>
+        <span className="font-bold text-black tracking-tight pt-0 mt-0 uppercase whitespace-nowrap max-w-full overflow-hidden text-ellipsis text-base sm:text-xl md:text-2xl lg:text-[2.5vw]">Talent Acquisition</span>
       </div>
     </div>
   );
@@ -58,7 +59,7 @@ function MarqueeText() {
 // App component
 export default function Home() {
   return (
-    <main className="bg-[#FCF7F8] min-h-screen">
+    <main className="bg-[#FCF7F8] min-h-screen overflow-x-hidden">
       <NavBar />
       {/* Animated Hero Section */}
       <section className="relative w-full h-[45vh] overflow-hidden flex items-center justify-center bg-[#FCF7F8]">
@@ -86,9 +87,8 @@ export default function Home() {
       {/* Our Featured Work Section (full-screen, punchy, left-aligned, seamless) */}
       <section className="w-full min-h-screen bg-[#F6F6ED] flex flex-col pt-24">
         {/* Section Title */}
-        <div className="w-full flex flex-col items-start pl-12 mt-4 mb-4">
-          <h2 className="text-5xl md:text-7xl font-light text-black flex items-end gap-4">
-            <span></span>
+        <div className="w-full flex flex-col items-start pl-4 sm:pl-12 mt-4 mb-4">
+          <h2 className="text-3xl sm:text-5xl md:text-7xl font-light text-black flex flex-wrap items-end gap-2 sm:gap-4 w-full break-words">
             <span className="italic font-serif font-bold">featured</span>
             <span className="font-black">Roles</span>
           </h2>
@@ -140,6 +140,15 @@ function BirramaJobBox() {
   // 1. Add loading state to BirramaJobBox
   const [loading, setLoading] = useState(false);
   const [recommendLoading, setRecommendLoading] = useState(false);
+  const [expandedDescription, setExpandedDescription] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Add modal close handler for click outside
+  function handleModalClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (modalRef.current && e.target === modalRef.current) {
+      setExpandedDescription(null);
+    }
+  }
 
   // Job data (expandable for more jobs/roles)
   const jobs = {
@@ -198,8 +207,11 @@ function BirramaJobBox() {
   function handleInput(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
     const { name, value } = target;
-    if (name === 'cv' || name === 'coverletter') {
-      setForm((f: FellowshipFormState) => ({ ...f, [name]: value }));
+    const files = (target as HTMLInputElement).files;
+    if (name === 'cv') {
+      setForm((f: FellowshipFormState) => ({ ...f, cv: files && files[0] ? files[0] : null }));
+    } else if (name === 'coverletter') {
+      setForm((f: FellowshipFormState) => ({ ...f, coverletter: files && files[0] ? files[0] : null }));
     } else if (name.startsWith('answer')) {
       const idx = parseInt(name.replace('answer', ''));
       setForm((f: FellowshipFormState) => ({ ...f, answers: f.answers.map((a: string, i: number) => i === idx ? value : a) }));
@@ -248,8 +260,7 @@ function BirramaJobBox() {
             other: form.other,
             linkedin: form.linkedin
           },
-          cv_link: cvUrl,
-          coverletter_link: coverLetterUrl,
+          cv_url: cvUrl,
         };
 
         const { error } = await supabase
@@ -316,8 +327,8 @@ function BirramaJobBox() {
           q11: form.answers_fulltime[10],
           q12: form.answers_fulltime[11],
           q13: form.answers_fulltime[12],
-          cv_link: cvUrl,
-          coverletter_link: coverLetterUrl,
+          cv_url: cvUrl,
+          coverletter_url: coverLetterUrl,
         };
 
         const { error } = await supabase
@@ -417,6 +428,15 @@ function BirramaJobBox() {
 
   return (
     <div className="border-8 border-[#171717] rounded-3xl bg-[#232323] overflow-hidden shadow-2xl mb-4 mt-2 w-full h-screen flex flex-col">
+      {/* Modal for expanded description */}
+      {expandedDescription && (
+        <div ref={modalRef} onClick={handleModalClick} className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+          <div className="bg-[#232323] rounded-2xl shadow-2xl w-[95vw] max-w-3xl max-h-[90vh] p-6 overflow-y-auto relative border-2 border-white">
+            <button onClick={() => setExpandedDescription(null)} className="absolute top-2 right-2 text-white text-2xl font-bold">&times;</button>
+            <pre className="text-white whitespace-pre-wrap text-base font-sans w-full" style={{fontFamily:'inherit'}}>{expandedDescription}</pre>
+          </div>
+        </div>
+      )}
       <div className="w-full h-full p-8 overflow-y-auto flex flex-col items-center">
         {step === 'role' && (
           <div className="flex flex-1 flex-col justify-center items-center w-full h-full">
@@ -461,7 +481,12 @@ function BirramaJobBox() {
             <h2 className="text-white text-2xl md:text-4xl font-black mb-8 text-center">
               {jobs.fellowship[selectedFellowshipJob]?.title}
             </h2>
-            <pre className="bg-[#232323] text-white text-left whitespace-pre-wrap p-4 rounded-xl max-w-2xl mb-8 border-2 border-white overflow-x-auto" style={{fontFamily:'inherit'}}>
+            <pre
+              className="bg-[#232323] text-white text-left whitespace-pre-wrap p-4 rounded-xl w-full max-w-2xl min-w-0 mb-8 border-2 border-white overflow-x-auto text-xs sm:text-sm md:text-base cursor-pointer hover:ring-2 hover:ring-[#4FC3F7] transition-all"
+              style={{fontFamily:'inherit'}}
+              title="Click to expand"
+              onClick={() => setExpandedDescription(jobs.fellowship[selectedFellowshipJob]?.description || '')}
+            >
               {jobs.fellowship[selectedFellowshipJob]?.description}
             </pre>
             <div className="flex flex-col md:flex-row gap-8 justify-center">
@@ -476,7 +501,12 @@ function BirramaJobBox() {
             <h2 className="text-white text-2xl md:text-4xl font-black mb-8 text-center">
               {jobs.fulltime[selectedFulltimeJob]?.title}
             </h2>
-            <pre className="bg-[#232323] text-white text-left whitespace-pre-wrap p-4 rounded-xl max-w-2xl mb-8 border-2 border-white overflow-x-auto" style={{fontFamily:'inherit'}}>
+            <pre
+              className="bg-[#232323] text-white text-left whitespace-pre-wrap p-4 rounded-xl w-full max-w-2xl min-w-0 mb-8 border-2 border-white overflow-x-auto text-xs sm:text-sm md:text-base cursor-pointer hover:ring-2 hover:ring-[#4FC3F7] transition-all"
+              style={{fontFamily:'inherit'}}
+              title="Click to expand"
+              onClick={() => setExpandedDescription(jobs.fulltime[selectedFulltimeJob]?.description || '')}
+            >
               {jobs.fulltime[selectedFulltimeJob]?.description}
             </pre>
             <div className="flex flex-col md:flex-row gap-8 justify-center">
@@ -491,6 +521,7 @@ function BirramaJobBox() {
             {selectedFellowshipJob !== null ? (
               <FellowshipApplicationForm
                 form={form}
+                setForm={setForm}
                 handleInput={handleInput}
                 handleSubmit={handleSubmit}
                 setStep={setStep}

@@ -7,16 +7,13 @@ ALTER TABLE fulltime_applicants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recommendations ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Allow anyone to insert (for job applications)
-DROP POLICY IF EXISTS "Allow insert for applications" ON fellowship_applicants;
 CREATE POLICY "Allow insert for applications" ON fellowship_applicants
 FOR INSERT WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Allow insert for applications" ON fulltime_applicants;
 CREATE POLICY "Allow insert for applications" ON fulltime_applicants
 FOR INSERT WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Allow insert for applications" ON recommendations;
-CREATE POLICY "Allow insert for applications" ON recommendations
+CREATE POLICY "Allow insert for recommendations" ON recommendations
 FOR INSERT WITH CHECK (true);
 
 -- Policy: Allow authenticated users to read their own data (optional)
