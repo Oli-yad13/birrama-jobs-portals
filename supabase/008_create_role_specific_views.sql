@@ -1,3 +1,16 @@
+-- Migration: Drop old fellowship views and function if they exist to avoid column/type errors
+DROP VIEW IF EXISTS data_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS marketing_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS sales_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS frontend_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS backend_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS devops_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS security_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS mobile_fellowship_applications CASCADE;
+DROP VIEW IF EXISTS all_fellowship_applications_export CASCADE;
+DROP VIEW IF EXISTS fellowship_summary_by_role CASCADE;
+DROP FUNCTION IF EXISTS export_role_applications(text);
+
 -- Migration: Create role-specific views for easy Excel exports and filtering
 -- This migration creates separate views for each fellowship role to make Excel exports cleaner
 
@@ -13,8 +26,8 @@ SELECT
     answers->>'experience' as experience,
     answers->>'interest' as interest,
     answers->>'linkedin' as linkedin,
-    cv_url,
-    answers->>'coverletter' as coverletter_url,
+    cv_link,
+    answers->>'coverletter' as coverletter_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -34,7 +47,7 @@ SELECT
     answers->>'interest' as interest,
     answers->>'portfolio' as portfolio,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -53,7 +66,7 @@ SELECT
     answers->>'experience' as experience,
     answers->>'interest' as interest,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -74,7 +87,7 @@ SELECT
     answers->>'portfolio' as portfolio,
     answers->>'other' as other,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -95,7 +108,7 @@ SELECT
     answers->>'portfolio' as portfolio,
     answers->>'other' as other,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -116,7 +129,7 @@ SELECT
     answers->>'portfolio' as portfolio,
     answers->>'other' as other,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -137,7 +150,7 @@ SELECT
     answers->>'portfolio' as portfolio,
     answers->>'other' as other,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -158,7 +171,7 @@ SELECT
     answers->>'portfolio' as portfolio,
     answers->>'other' as other,
     answers->>'linkedin' as linkedin,
-    cv_url,
+    cv_link,
     answers,
     created_at
 FROM fellowship_applicants 
@@ -180,8 +193,8 @@ SELECT
     answers->>'portfolio' as portfolio,
     answers->>'other' as other,
     answers->>'linkedin' as linkedin,
-    cv_url,
-    answers->>'coverletter' as coverletter_url,
+    cv_link,
+    answers->>'coverletter' as coverletter_link,
     created_at,
     -- Extract specific answers from JSONB for easier Excel viewing
     answers->>'education' as education_answer,
@@ -199,7 +212,7 @@ CREATE OR REPLACE VIEW fellowship_summary_by_role AS
 SELECT 
     role,
     COUNT(*) as total_applications,
-    COUNT(CASE WHEN cv_url IS NOT NULL THEN 1 END) as with_cv,
+    COUNT(CASE WHEN cv_link IS NOT NULL THEN 1 END) as with_cv,
     COUNT(CASE WHEN answers->>'coverletter' IS NOT NULL THEN 1 END) as with_coverletter,
     COUNT(CASE WHEN answers->>'linkedin' IS NOT NULL THEN 1 END) as with_linkedin,
     MIN(created_at) as first_application,
@@ -223,8 +236,8 @@ RETURNS TABLE (
     portfolio TEXT,
     other TEXT,
     linkedin TEXT,
-    cv_url TEXT,
-    coverletter_url TEXT,
+    cv_link TEXT,
+    coverletter_link TEXT,
     created_at TIMESTAMP WITH TIME ZONE
 ) AS $$
 BEGIN
@@ -241,8 +254,8 @@ BEGIN
         fa.answers->>'portfolio' as portfolio,
         fa.answers->>'other' as other,
         fa.answers->>'linkedin' as linkedin,
-        fa.cv_url,
-        fa.answers->>'coverletter' as coverletter_url,
+        fa.cv_link,
+        fa.answers->>'coverletter' as coverletter_link,
         fa.created_at
     FROM fellowship_applicants fa
     WHERE fa.role = role_name

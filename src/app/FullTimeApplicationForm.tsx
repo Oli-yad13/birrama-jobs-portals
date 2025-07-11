@@ -58,55 +58,27 @@ const FullTimeApplicationForm: React.FC<FullTimeApplicationFormProps> = ({ form,
       </select>
     </label>
     <label className="flex flex-col gap-2 font-bold">
-      Upload CV*
-      <div className="flex items-center gap-2">
-        <input
-          name="cv"
-          type="file"
-          accept=".pdf,.doc,.docx"
-          onChange={handleInput}
-          className="p-2 rounded text-black bg-white font-normal"
-          required
-        />
-        {form.cv && typeof form.cv !== 'string' && (
-          <>
-            <span className="text-white font-normal text-xs bg-black/40 px-2 py-1 rounded">{form.cv.name}</span>
-            <button
-              type="button"
-              className="text-red-500 font-bold text-lg ml-1"
-              onClick={() => setForm((f: FullTimeFormState) => ({ ...f, cv: null }))}
-              aria-label="Remove file"
-            >
-              ×
-            </button>
-          </>
-        )}
-      </div>
+      CV Link*
+      <input
+        name="cv"
+        type="url"
+        placeholder="https://drive.google.com/your-cv-link"
+        value={typeof form.cv === 'string' ? form.cv : ''}
+        onChange={handleInput}
+        className="p-2 rounded text-black bg-white font-normal"
+        required
+      />
     </label>
     <label className="flex flex-col gap-2 font-bold">
-      Upload Cover Letter
-      <div className="flex items-center gap-2">
-        <input
-          name="coverletter"
-          type="file"
-          accept=".pdf,.doc,.docx"
-          onChange={handleInput}
-          className="p-2 rounded text-black bg-white font-normal"
-        />
-        {form.coverletter instanceof File && (
-          <>
-            <span className="text-white font-normal text-xs bg-black/40 px-2 py-1 rounded">{form.coverletter.name}</span>
-            <button
-              type="button"
-              className="text-red-500 font-bold text-lg ml-1"
-              onClick={() => setForm((f: FullTimeFormState) => ({ ...f, coverletter: null }))}
-              aria-label="Remove file"
-            >
-              ×
-            </button>
-          </>
-        )}
-      </div>
+      Cover Letter Link
+      <input
+        name="coverletter"
+        type="url"
+        placeholder="https://drive.google.com/your-cover-letter-link"
+        value={typeof form.coverletter === 'string' ? form.coverletter : ''}
+        onChange={handleInput}
+        className="p-2 rounded text-black bg-white font-normal"
+      />
     </label>
     <div className="mt-4">
       <h4 className="text-2xl font-bold mb-2">Strategic Thinking & Experience</h4>

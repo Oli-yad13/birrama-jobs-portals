@@ -207,11 +207,8 @@ function BirramaJobBox() {
   function handleInput(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
     const { name, value } = target;
-    const files = (target as HTMLInputElement).files;
-    if (name === 'cv') {
-      setForm((f: FellowshipFormState) => ({ ...f, cv: files && files[0] ? files[0] : null }));
-    } else if (name === 'coverletter') {
-      setForm((f: FellowshipFormState) => ({ ...f, coverletter: files && files[0] ? files[0] : null }));
+    if (name === 'cv' || name === 'coverletter') {
+      setForm((f: FellowshipFormState) => ({ ...f, [name]: value }));
     } else if (name.startsWith('answer')) {
       const idx = parseInt(name.replace('answer', ''));
       setForm((f: FellowshipFormState) => ({ ...f, answers: f.answers.map((a: string, i: number) => i === idx ? value : a) }));
@@ -260,7 +257,8 @@ function BirramaJobBox() {
             other: form.other,
             linkedin: form.linkedin
           },
-          cv_url: cvUrl,
+          cv_link: cvUrl,
+          coverletter_link: coverLetterUrl,
         };
 
         const { error } = await supabase
@@ -327,8 +325,8 @@ function BirramaJobBox() {
           q11: form.answers_fulltime[10],
           q12: form.answers_fulltime[11],
           q13: form.answers_fulltime[12],
-          cv_url: cvUrl,
-          coverletter_url: coverLetterUrl,
+          cv_link: cvUrl,
+          coverletter_link: coverLetterUrl,
         };
 
         const { error } = await supabase
@@ -521,7 +519,6 @@ function BirramaJobBox() {
             {selectedFellowshipJob !== null ? (
               <FellowshipApplicationForm
                 form={form}
-                setForm={setForm}
                 handleInput={handleInput}
                 handleSubmit={handleSubmit}
                 setStep={setStep}
