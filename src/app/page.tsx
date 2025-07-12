@@ -437,7 +437,7 @@ function BirramaJobBox() {
   }
 
   return (
-    <div className="border-8 border-[#171717] rounded-3xl bg-[#232323] overflow-hidden shadow-2xl mb-4 mt-2 w-full h-screen flex flex-col">
+    <div className="border-8 border-[#171717] rounded-3xl bg-[#232323] overflow-hidden shadow-2xl mb-4 mt-2 w-full min-h-[400px] flex flex-col pt-4 sm:pt-8">
       {/* Modal for expanded description */}
       {expandedDescription && (
         <div ref={modalRef} onClick={handleModalClick} className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
