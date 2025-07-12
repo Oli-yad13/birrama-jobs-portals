@@ -49,8 +49,12 @@ function MarqueeText() {
   return (
     <div className="w-full z-20 overflow-visible">
       <div className="relative w-full mx-auto flex flex-col items-center justify-center min-w-0 mt-2" style={{ minHeight: 0 }}>
-        <span className="font-extrabold text-black tracking-tight pt-0 mt-0 uppercase whitespace-nowrap max-w-full overflow-hidden text-ellipsis text-2xl sm:text-4xl md:text-5xl lg:text-[4vw]">Birrama Venture Studio</span>
-        <span className="font-bold text-black tracking-tight pt-0 mt-0 uppercase whitespace-nowrap max-w-full overflow-hidden text-ellipsis text-base sm:text-xl md:text-2xl lg:text-[2.5vw]">Talent Acquisition</span>
+        <span className="font-extrabold text-black tracking-tight uppercase text-3xl sm:text-5xl md:text-6xl text-center">
+          Birrama Venture Studio
+        </span>
+        <span className="font-bold text-black tracking-tight uppercase text-lg sm:text-2xl md:text-3xl mt-2 text-center">
+          Talent Acquisition
+        </span>
       </div>
     </div>
   );
@@ -62,26 +66,34 @@ export default function Home() {
     <main className="bg-[#FCF7F8] min-h-screen overflow-x-hidden">
       <NavBar />
       {/* Animated Hero Section */}
-      <section className="relative w-full h-[45vh] overflow-hidden flex items-center justify-center bg-[#FCF7F8]">
+      <section
+        className="relative w-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px] pt-24 flex items-center justify-center overflow-hidden"
+        style={{
+          background: "linear-gradient(180deg, #eaf6fb 0%, #f7fafc 60%, #F6F6ED 100%)",
+          boxShadow: "0 8px 24px -8px rgba(0,0,0,0.04)"
+        }}
+      >
         {/* More prominent animated background shapes */}
         <motion.div
-          className="absolute inset-0 z-0 flex items-center justify-center"
+          className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
           initial={{}}
           animate={{}}
         >
           <motion.div
-            className="w-[80vw] h-[80vw] bg-[#B6E3E3] rounded-full blur-3xl opacity-50 absolute -left-40 -top-40"
+            className="w-[60vw] h-[40vw] max-h-[350px] bg-[#B6E3E3] rounded-full blur-3xl opacity-50 absolute -left-20 -top-20"
             animate={{ scale: [1, 1.15, 1], x: [0, 40, 0], y: [0, -40, 0] }}
-            transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
+            transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut' }}
           />
           <motion.div
-            className="w-[70vw] h-[70vw] bg-[#B6E3E3] rounded-full blur-3xl opacity-40 absolute -right-40 -bottom-40"
+            className="w-[50vw] h-[30vw] max-h-[250px] bg-[#B6E3E3] rounded-full blur-3xl opacity-40 absolute -right-20 -bottom-20"
             animate={{ scale: [1, 1.1, 1], x: [0, -40, 0], y: [0, 40, 0] }}
-            transition={{ repeat: Infinity, duration: 12, ease: "easeInOut" }}
+            transition={{ repeat: Infinity, duration: 12, ease: 'easeInOut' }}
           />
         </motion.div>
         {/* Infinite seamless marquee sliding text at the bottom */}
-        <MarqueeText />
+        <div className="z-10 w-full flex flex-col items-center text-center">
+          <MarqueeText />
+        </div>
       </section>
 
       {/* Our Featured Work Section (full-screen, punchy, left-aligned, seamless) */}
